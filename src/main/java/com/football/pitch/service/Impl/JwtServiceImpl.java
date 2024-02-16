@@ -22,7 +22,7 @@ public class JwtServiceImpl implements JwtService {
     @Value("stu.edu.vn")
     private String jwtSecret;
 
-    @Value("3600000")
+    @Value("7200000")
     private int jwtExpirationMs;
 
     public String extractUsername(String token) {
@@ -59,14 +59,16 @@ public class JwtServiceImpl implements JwtService {
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
         String username = extractUsername(token);
+
         return username.equals(userDetails.getUsername()) && !isTokenExpired(token);
+
     }
 
     public boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
 
-    public Date     extractExpiration(String token) {
+    public Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
     }
 

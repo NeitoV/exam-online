@@ -18,7 +18,4 @@ public class Type {
 
     @Column(name = "name", columnDefinition = "NVARCHAR(25)", nullable = false, unique = true)
     private String name;
-
-    @Column(name = "price_per_hour", nullable = false)
-    private BigDecimal pricePerHour;
 }

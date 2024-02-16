@@ -37,6 +37,4 @@ public class Manager {
     @ManyToOne
     @JoinColumn(name = "location_id")
     private Location location;
-
-    private BigDecimal basic_salary;
 }

@@ -1,14 +1,14 @@
 package com.football.pitch.config;
 
-import com.football.pitch.service.Impl.UserDetailsServiceImpl;
+import com.football.pitch.service.Impl.UserDetailsImpl.UserDetailsServiceImpl;
 import com.football.pitch.service.JwtService;
+import io.jsonwebtoken.JwtException;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -26,41 +26,46 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Autowired
     private UserDetailsServiceImpl userDetailsService;
 
-
     @Override
     protected void doFilterInternal(
             @NonNull HttpServletRequest request,
             @NonNull HttpServletResponse response,
-            @NonNull FilterChain filterChain) throws ServletException, IOException
-    {
-        String authHeader = request.getHeader("Authorization");
-        String jwt;
-        String userName;
+            @NonNull FilterChain filterChain) throws ServletException, IOException {
+        try {
+            String jwt = parseJwt(request);
 
-        if(authHeader == null || !authHeader.startsWith("Bearer "))
-        {
-            filterChain.doFilter(request,response);
-            return;
-        }
-        jwt = authHeader.substring(7);
+            if (jwt != null) {
+                String userName = jwtService.extractUsername(jwt);
+                if (userName != null) {
+                    UserDetails userDetails = userDetailsService.loadUserByUsername(userName);
 
-        userName = jwtService.extractUsername(jwt);
+                    if (jwtService.isTokenValid(jwt, userDetails)) {
 
-        if(userName != null) {
-            UserDetails userDetails = userDetailsService.loadUserByUsername(userName);
-
-            if (jwtService.isTokenValid(jwt,userDetails)){
-
-                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                        userDetails,
-                        null,
-                        userDetails.getAuthorities()
+                        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+                                userDetails,
+                                null,
+                                userDetails.getAuthorities()
                         );
-
-                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                    }
+                }
             }
+
+            filterChain.doFilter(request, response);
+
+        } catch (JwtException e) {
+            throw new IllegalStateException("Token cannot be trusted");
+        }
+    }
+
+    private String parseJwt(HttpServletRequest request) {
+        String authHeader = request.getHeader("Authorization");
+
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+
+            return authHeader.substring(7);
         }
 
-        filterChain.doFilter(request,response);
+        return null;
     }
 }

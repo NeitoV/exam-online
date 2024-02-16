@@ -15,6 +15,9 @@ public class Location {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name", columnDefinition = "NVARCHAR(250)", nullable = false)
+    @Column(name = "name", columnDefinition = "NVARCHAR(250)", nullable = false, unique = true)
     private String name;
+
+    @Column(name = "description", columnDefinition = "NVARCHAR(250)", nullable = false)
+    private String description;
 }

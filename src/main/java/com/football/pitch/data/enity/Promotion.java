@@ -29,4 +29,7 @@ public class Promotion {
     @Temporal(TemporalType.DATE)
     @Column(name = "date")
     private Date date;
+
+    @Column(name = "deleted", nullable = false)
+    private boolean deleted = false;
 }

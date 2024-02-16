@@ -27,7 +27,7 @@ public class Customer {
     private Date birthday;
 
     @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_id", nullable = true)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     private Integer belief = 100;

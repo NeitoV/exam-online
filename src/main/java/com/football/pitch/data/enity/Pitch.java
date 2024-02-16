@@ -15,20 +15,26 @@ public class Pitch {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "description", columnDefinition = "NVARCHAR(250)", nullable = false)
+    @Column(name = "name", columnDefinition = "NVARCHAR(250)", nullable = false)
+    private String name;
+
+    @Column(name = "description", columnDefinition = "NVARCHAR(250)")
     private String description;
 
     @Column(name = "picture")
     private String picture;
 
-    @Column(name = "average_rating")
-    private Float average_rating;
+    @Column(name = "url", columnDefinition = "LONGTEXT")
+    private String url;
 
-    @ManyToOne
+    @Column(name = "average_rating")
+    private Float averageRating = (float) 0;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "type_id", nullable = false)
     private Type type;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "manager_id", nullable = false)
     private Manager manager;
 }

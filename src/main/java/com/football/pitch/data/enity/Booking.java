@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.util.Date;
 
 @Data
@@ -20,23 +21,28 @@ public class Booking {
     @Column(name = "date")
     private Date date;
 
-    @ManyToOne
-    @JoinColumn (name = "pitch_id", nullable = false)
-    private Pitch pitch;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "pitch_details_id", nullable = false)
+    private PitchDetails pitchDetails;
 
-    @ManyToOne
-    @JoinColumn(name = "time_id", nullable = false)
-    private Time time;
-
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;
 
-    @ManyToOne
-    @JoinColumn(name = "promotion_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "promotion_id")
     private Promotion promotion;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "status_id", nullable = false)
     private Status status;
+
+    @Column(name = "full_name", columnDefinition = "NVARCHAR(250)", nullable = false)
+    private String fullName;
+
+    @Column(name = "phone_number", columnDefinition = "CHAR(11)", nullable = false)
+    private String phoneNumber;
+
+    @Column(name = "total_revenue", nullable = false)
+    private BigDecimal totalRevenue;
 }

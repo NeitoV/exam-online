@@ -11,14 +11,22 @@ import java.util.function.Function;
 
 public interface JwtService {
 
-    public String extractUsername(String token);
-    public Claims extractAllClaims(String token);
-    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver);
-    public String generateToken(Map<String, Object> extractClaim, UserDetails userDetails);
-    public String generateToken(UserDetails userDetails);
-    public boolean isTokenValid(String token, UserDetails userDetails);
-    public boolean isTokenExpired(String token);
-    public Date extractExpiration(String token);
-    public List<Map<String, String>> extractRole(String token);
+    String extractUsername(String token);
+
+    Claims extractAllClaims(String token);
+
+    <T> T extractClaim(String token, Function<Claims, T> claimsResolver);
+
+    String generateToken(Map<String, Object> extractClaim, UserDetails userDetails);
+
+    String generateToken(UserDetails userDetails);
+
+    boolean isTokenValid(String token, UserDetails userDetails);
+
+    boolean isTokenExpired(String token);
+
+    Date extractExpiration(String token);
+
+    List<Map<String, String>> extractRole(String token);
 
 }
