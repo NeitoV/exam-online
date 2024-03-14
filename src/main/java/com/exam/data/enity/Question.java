@@ -23,17 +23,17 @@ public class Question {
     @Column(name = "content", columnDefinition = "NVARCHAR(250)", nullable = false)
     private String content;
 
-    @Column(name = "answer_first", columnDefinition = "NVARCHAR(250)", nullable = false)
-    private String answerFirst;
+    @Column(name = "first_answer", columnDefinition = "NVARCHAR(250)", nullable = false)
+    private String firstAnswer;
 
-    @Column(name = "answer_second", columnDefinition = "NVARCHAR(250)", nullable = false)
-    private String answerSecond;
+    @Column(name = "second_answer", columnDefinition = "NVARCHAR(250)", nullable = false)
+    private String secondAnswer;
 
-    @Column(name = "answer_third", columnDefinition = "NVARCHAR(250)", nullable = false)
-    private String answerThird;
+    @Column(name = "third_answer", columnDefinition = "NVARCHAR(250)", nullable = false)
+    private String thirdAnswer;
 
-    @Column(name = "answer_fourth", columnDefinition = "NVARCHAR(250)", nullable = false)
-    private String answerFourth;
+    @Column(name = "fourth_answer", columnDefinition = "NVARCHAR(250)", nullable = false)
+    private String fourthAnswer;
 
     @Column(name = "correct_answer", columnDefinition = "char(1)", nullable = false)
     private String correctAnswer;
