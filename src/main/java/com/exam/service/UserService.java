@@ -1,9 +1,6 @@
 package com.exam.service;
 
-import com.exam.data.dto.ChangePasswordDTO;
-import com.exam.data.dto.JwtResponseDTO;
-import com.exam.data.dto.LoginDTO;
-import com.exam.data.dto.MessageResponse;
+import com.exam.data.dto.*;
 import com.exam.data.enity.User;
 
 public interface UserService {
@@ -13,4 +10,5 @@ public interface UserService {
 
     MessageResponse changePassword(ChangePasswordDTO changePasswordDTO);
 
+    MessageResponse saveRegister(RegisterDTO registerDTO);
 }
