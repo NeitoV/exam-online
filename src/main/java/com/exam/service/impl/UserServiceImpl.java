@@ -1,12 +1,13 @@
 package com.exam.service.impl;
 
-import com.exam.data.dto.ChangePasswordDTO;
-import com.exam.data.dto.JwtResponseDTO;
-import com.exam.data.dto.LoginDTO;
-import com.exam.data.dto.MessageResponse;
+import com.exam.data.dto.*;
+import com.exam.data.enity.Lecturer;
 import com.exam.data.enity.Role;
+import com.exam.data.enity.Student;
 import com.exam.data.enity.User;
+import com.exam.data.repository.LecturerRepository;
 import com.exam.data.repository.RoleRepository;
+import com.exam.data.repository.StudentRepository;
 import com.exam.data.repository.UserRepository;
 import com.exam.exception.AccessDeniedException;
 import com.exam.exception.ConflictException;
@@ -40,8 +41,14 @@ public class UserServiceImpl implements UserService {
     private UserDetailsService userDetailsService;
     @Autowired
     private AuthenticationManager authenticationManager;
+
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private StudentRepository studentRepository;
+    @Autowired
+    private LecturerRepository lecturerRepository;
+
     @Autowired
     private JwtService jwtService;
     @Autowired
@@ -121,6 +128,54 @@ public class UserServiceImpl implements UserService {
         }
 
         return new MessageResponse(HttpServletResponse.SC_OK, "successfully");
+    }
+
+    @Override
+    public MessageResponse saveRegistor(RegisterDTO registerDTO) {
+        if (userRepository.findByEmail(registerDTO.getEmail()).isPresent())
+            throw new ConflictException(Collections.singletonMap("email: ", registerDTO.getEmail()));
+
+        if (!registerDTO.getPassword().equals(registerDTO.getPasswordConfirm())) {
+            throw new ExceptionCustom("Passwords do not match!");
+        }
+
+        if (registerDTO.getRoleId() == 2 ||registerDTO.getRoleId()==3) {
+            Role role = roleRepository.findById(registerDTO.getRoleId()).orElseThrow(
+                    () -> new ResourceNotFoundException(Collections.singletonMap("role id:", registerDTO.getRoleId()))
+            );
+
+            User user = new User();
+            Student student = new Student();
+            Lecturer lecturer = new Lecturer();
+
+            user.setEmail(registerDTO.getEmail());
+            user.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
+            user.setRole(role);
+
+            userRepository.save(user);
+
+            User savedUser = userRepository.save(user);
+
+            if (registerDTO.getRoleId()==3){
+                student.setName(registerDTO.getName());
+                student.setUser(savedUser);
+                studentRepository.save(student);
+            }
+
+
+            if (registerDTO.getRoleId() == 2){
+                lecturer.setName(registerDTO.getName());
+                lecturer.setExpertise(registerDTO.getExpertise());
+                lecturer.setUser(savedUser);
+                lecturerRepository.save(lecturer);
+            }
+
+
+        } else {
+            throw new AccessDeniedException(Collections.singletonMap("You can not create admin", null));
+        }
+
+        return new MessageResponse(HttpServletResponse.SC_OK, "Tao user thanh cong");
     }
 
     private Boolean checkValidPassword(String password, String passwordEncoded) {
