@@ -12,5 +12,4 @@ public interface ExamRepository extends JpaRepository<Exam, Long> {
 
     Optional<Exam> findByCode(String code);
 
-    Integer countByCode()
 }

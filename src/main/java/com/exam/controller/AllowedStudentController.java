@@ -1,9 +1,11 @@
 package com.exam.controller;
 
 import com.exam.service.AllowedStudentService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,6 +17,9 @@ public class AllowedStudentController {
     @Autowired
     private AllowedStudentService allowedStudentService;
 
+
+    @SecurityRequirement(name = "Bearer Authentication")
+    @PreAuthorize("hasAuthority('Role_Admin')")
     @PostMapping("/{examId}")
     ResponseEntity<?> createAllowedStudentForExam(@PathVariable Long examId, @RequestBody List<Long> studentIdS) {
 

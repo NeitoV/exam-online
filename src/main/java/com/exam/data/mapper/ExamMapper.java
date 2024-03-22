@@ -13,6 +13,7 @@ public interface ExamMapper {
 
     @Mapping(target = "examDTO.expiryDate", source = "expiryDate")
     @Mapping(target = "examDTO.durationMinutes", source = "durationMinutes")
+    @Mapping(target = "examDTO.name", source = "name")
     @Mapping(target = "examDTO.id", source = "id")
     ExamShowDTO toDTOShow(Exam exam);
 }

@@ -1,10 +1,8 @@
 package com.exam.service;
 
-import com.exam.data.dto.ChangePasswordDTO;
-import com.exam.data.dto.JwtResponseDTO;
-import com.exam.data.dto.LoginDTO;
-import com.exam.data.dto.MessageResponse;
+import com.exam.data.dto.*;
 import com.exam.data.enity.User;
+import org.springframework.transaction.annotation.Transactional;
 
 public interface UserService {
     JwtResponseDTO loginUser(LoginDTO loginDTO);
@@ -13,4 +11,6 @@ public interface UserService {
 
     MessageResponse changePassword(ChangePasswordDTO changePasswordDTO);
 
+    @Transactional
+    MessageResponse saveRegister(RegisterDTO registerDTO);
 }
