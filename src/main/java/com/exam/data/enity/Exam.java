@@ -21,6 +21,9 @@ public class Exam {
     @Column(name = "code", columnDefinition = "NVARCHAR(10)", nullable = false, unique = true)
     private String code;
 
+    @Column(name = "name", columnDefinition = "NVARCHAR(250)", nullable = false)
+    private String name;
+
     @Column(name = "duration_minutes", nullable = false)
     private int durationMinutes;
 
@@ -28,6 +31,6 @@ public class Exam {
     private LocalDate expiryDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "lecturer_id", nullable = false)
+    @JoinColumn(name = "lecturer_id")
     private Lecturer lecturer;
 }

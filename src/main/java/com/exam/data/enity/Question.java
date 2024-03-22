@@ -35,7 +35,7 @@ public class Question {
     @Column(name = "fourth_answer", columnDefinition = "NVARCHAR(250)", nullable = false)
     private String fourthAnswer;
 
-    @Column(name = "correct_answer", columnDefinition = "char(1)", nullable = false)
+    @Column(name = "correct_answer", columnDefinition = "NVARCHAR(250)", nullable = false)
     private String correctAnswer;
 
 }

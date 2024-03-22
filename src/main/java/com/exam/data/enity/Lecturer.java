@@ -18,8 +18,8 @@ public class Lecturer {
     @Column(name = "name", columnDefinition = "NVARCHAR(250)", nullable = false)
     private String name;
 
-    @Column(name = "expertise", columnDefinition = "NVARCHAR(250)", nullable = false)
-    private String expertise;
+//    @Column(name = "expertise", columnDefinition = "NVARCHAR(250)", nullable = false)
+//    private String expertise;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)

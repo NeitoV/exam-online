@@ -51,7 +51,6 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserMapper userMapper;
 
-
     @Override
     public JwtResponseDTO loginUser(LoginDTO loginDTO) {
 
