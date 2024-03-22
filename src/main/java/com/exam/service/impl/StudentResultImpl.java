@@ -21,11 +21,14 @@ public class StudentResultImpl implements StudentResultService {
         for (Object[] result : results) {
             String examCode = (String) result[0];
             String lecturerName = (String) result[1];
-            int point = (int) result[2];
+            String className = (String)result[2];
+            int point = (int) result[3];
+
             StudentResultDTO dto = new StudentResultDTO();
             dto.setExamCode(examCode);
             dto.setLecturerName(lecturerName);
             dto.setPoint(point);
+            dto.setClassName(className);
 
             if(point >= EConstantNumber.passPoint) {
                 dto.setPass(true);

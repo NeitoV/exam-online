@@ -10,11 +10,12 @@ import java.util.Optional;
 
 @Repository
 public interface StudentResultRepository extends JpaRepository<ExamResult, Long> {
-    
-    @Query("SELECT e.code, l.name, er.point " +
+
+    @Query("SELECT e.code, er.student.aClass.name, l.name, er.point " +
             "FROM ExamResult er " +
             "JOIN er.exam e " +
             "JOIN e.lecturer l " +
+//            "JOIN er.student.aClass.name"+
             "WHERE er.student.id = :studentId")
     List<Object[]> getStudentResult(Long studentId);
 }
