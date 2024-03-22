@@ -11,7 +11,7 @@ import java.util.Optional;
 @Repository
 public interface StudentResultRepository extends JpaRepository<ExamResult, Long> {
 
-    @Query("SELECT e.code, l.name, er.student.aClass.name, er.point " +
+    @Query("SELECT e.code, l.name, e.name, er.point " +
             "FROM ExamResult er " +
             "JOIN er.exam e " +
             "JOIN e.lecturer l " +

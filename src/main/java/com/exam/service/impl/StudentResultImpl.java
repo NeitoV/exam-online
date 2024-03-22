@@ -1,10 +1,14 @@
 package com.exam.service.impl;
 
+import com.exam.data.dto.PaginationDTO;
 import com.exam.data.dto.StudentResultDTO;
 import com.exam.data.repository.StudentResultRepository;
 import com.exam.enumeration.EConstantNumber;
 import com.exam.service.StudentResultService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,8 +17,8 @@ import java.util.List;
 public class StudentResultImpl implements StudentResultService {
     @Autowired
     private StudentResultRepository studentResultRepository;
-    @Override
-    public List<StudentResultDTO> getStudentExamResults(Long studentId) {
+
+    public PaginationDTO getStudentExamResults(Long studentId, int pageNumber, int pageSize) {
         List<Object[]> results = studentResultRepository.getStudentResult(studentId);
         List<StudentResultDTO> dtos = new ArrayList<>();
 
@@ -38,6 +42,11 @@ public class StudentResultImpl implements StudentResultService {
 
             dtos.add(dto);
         }
-        return dtos;
+
+        Page<StudentResultDTO> page = new PageImpl<>(dtos, PageRequest.of(pageNumber, pageSize), 2);
+
+        return new PaginationDTO(page.getContent(), page.isFirst(), page.isLast(),
+                page.getTotalPages(), page.getTotalElements(), page.getNumber(), page.getSize());
+//      return dtos;
     }
 }
