@@ -31,6 +31,6 @@ public class Exam {
     private LocalDate expiryDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "lecturer_id", nullable = false)
+    @JoinColumn(name = "lecturer_id")
     private Lecturer lecturer;
 }

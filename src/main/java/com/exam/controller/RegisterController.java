@@ -19,8 +19,8 @@ public class RegisterController {
 
     @PostMapping("")
     public ResponseEntity<?> registerUser(@Valid @RequestBody RegisterDTO registerDTO) {
-        userService.saveRegister(registerDTO);
 
-        return ResponseEntity.ok().build();
+
+        return ResponseEntity.ok(userService.saveRegister(registerDTO));
     }
 }

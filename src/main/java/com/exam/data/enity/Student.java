@@ -19,7 +19,7 @@ public class Student {
     private String name;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "class_id", nullable = false)
+    @JoinColumn(name = "class_id")
     private StudentClass aClass;
 
     @ManyToOne(fetch = FetchType.LAZY)
