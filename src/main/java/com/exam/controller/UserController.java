@@ -21,7 +21,7 @@ public class UserController {
     public ResponseEntity<?> filterUser(@RequestParam(defaultValue = "0") int pageNumber,
                                         @RequestParam(defaultValue = "10") int pageSize,
                                         @RequestParam(defaultValue = "") String keyword,
-                                        @RequestParam(defaultValue = "0") Long roleId) {
+                                        @RequestParam(defaultValue = "0") long roleId) {
 
         return ResponseEntity.ok(userService.filterUser(keyword, roleId, pageNumber, pageSize));
     }

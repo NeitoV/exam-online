@@ -72,7 +72,7 @@ public class ExamServiceImpl implements ExamService {
 
         if (user.getRole().getId() != ERole.roleAdmin) { // if role = role admin => set lecturer = null
 
-            lecturer = lecturerRepository.findByUserId(user.getId());
+            lecturer = lecturerRepository.findByUserId(user.getId()).orElse(null);
         }
 
         Exam exam = examMapper.toEntity(examDTO);

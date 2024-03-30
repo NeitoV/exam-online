@@ -152,14 +152,17 @@ public class UserServiceImpl implements UserService {
             user.setEmail(registerDTO.getEmail());
             user.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
             user.setRole(role);
+
             userRepository.save(user);
 
             User savedUser = userRepository.save(user);
 
             if (registerDTO.getRoleId() == ERole.roleStudent) {
                 Student student = new Student();
+
                 student.setName(registerDTO.getName());
                 student.setUser(savedUser);
+
                 studentRepository.save(student);
             }
             if (registerDTO.getRoleId() == ERole.roleLecturer) {
@@ -195,16 +198,18 @@ public class UserServiceImpl implements UserService {
 
         int roleIdDb = user.getRole().getId().intValue();
         switch (roleIdDb) {
-            case 2: {
+            case 3: {
                 Student student = studentRepository.findByUserId(user.getId()).orElseThrow(
-                        () -> new ResourceNotFoundException(Collections.singletonMap("student: ", null))
+                        () -> new ResourceNotFoundException(Collections.singletonMap("message", "student is null"))
                 );
                 userShowDTO.setName(student.getName());
                 break;
             }
 
-            case 3: {
-                Lecturer lecturer = lecturerRepository.findByUserId(user.getId());
+            case 2: {
+                Lecturer lecturer = lecturerRepository.findByUserId(user.getId()).orElseThrow(
+                        () -> new ResourceNotFoundException(Collections.singletonMap("message", "lecturer is null"))
+                );
                 userShowDTO.setName(lecturer.getName());
                 break;
             }
@@ -223,9 +228,8 @@ public class UserServiceImpl implements UserService {
 
         for (User user : page.getContent()) {
 
-//            UserShowDTO userShowDTO = mapToDTO(user);
-            UserShowDTO userShowDTO = new UserShowDTO();
-            userShowDTO.setEmail(user.getEmail());
+            UserShowDTO userShowDTO = mapToDTO(user);
+
             list.add(userShowDTO);
         }
 

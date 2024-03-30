@@ -6,7 +6,7 @@ import com.exam.data.enity.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {RoleMapper.class})
 public interface UserMapper {
     @Mapping(target = "password", ignore = true)
     User toEntity(LoginDTO loginDTO);
