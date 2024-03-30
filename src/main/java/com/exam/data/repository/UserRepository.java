@@ -16,6 +16,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Boolean existsByEmail(String email);
 
+
     @Query("select u from User u " +
             "left join Student s on u.id = s.user.id " +
             "left join Lecturer l on u.id = l.user.id " +

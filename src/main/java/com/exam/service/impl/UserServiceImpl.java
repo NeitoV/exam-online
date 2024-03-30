@@ -72,11 +72,11 @@ public class UserServiceImpl implements UserService {
         );
 
         if (user.isDeleted()) {
-            throw new AccessDeniedException(Collections.singletonMap("user is deleted", null));
+            throw new AccessDeniedException(Collections.singletonMap("message", "user is deleted"));
         }
 
         if (!checkValidPassword(loginDTO.getPassword(), user.getPassword()))
-            throw new AccessDeniedException(Collections.singletonMap("password is wrong", null));
+            throw new AccessDeniedException(Collections.singletonMap("message", "password is wrong"));
 
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginDTO.getEmail(),
@@ -109,13 +109,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public MessageResponse changePassword(ChangePasswordDTO changePasswordDTO) {
         if (!changePasswordDTO.getNewPassword().equals(changePasswordDTO.getConfirmPassword()))
-            throw new ExceptionCustom("Password confirm not same", null);
+            throw new ExceptionCustom("message", "Password confirm not same");
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         String email = authentication.getName();
         User user = userRepository.findByEmail(email).orElseThrow(
-                () -> new ExceptionCustom("Not authentication", null));
+                () -> new ExceptionCustom("message", "Not authentication"));
 
         List<? extends GrantedAuthority> authorities = authentication.getAuthorities()
                 .stream().collect(Collectors.toList());
@@ -134,17 +134,20 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public MessageResponse saveRegister(RegisterDTO registerDTO) {
+    public MessageResponse createRegister(RegisterDTO registerDTO) {
         if (userRepository.findByEmail(registerDTO.getEmail()).isPresent())
-            throw new ConflictException(Collections.singletonMap("email: ", registerDTO.getEmail()));
+            throw new ResourceNotFoundException(Collections.singletonMap("message", "email do not found"));
 
         if (!registerDTO.getPassword().equals(registerDTO.getPasswordConfirm())) {
             throw new ExceptionCustom("Passwords do not match!");
         }
 
-        if (registerDTO.getRoleId() == ERole.roleLecturer || registerDTO.getRoleId() == ERole.roleStudent) {
+        if (registerDTO.getRoleId() == ERole.roleAdmin) {
+            throw new ResourceNotFoundException(Collections.singletonMap("message", "admin access not allow"));
+        } else {
+
             Role role = roleRepository.findById(registerDTO.getRoleId()).orElseThrow(
-                    () -> new ResourceNotFoundException(Collections.singletonMap("role id:", registerDTO.getRoleId()))
+                    () -> new ResourceNotFoundException(Collections.singletonMap("message", "role do not exist"))
             );
 
             User user = new User();
@@ -167,12 +170,12 @@ public class UserServiceImpl implements UserService {
             }
             if (registerDTO.getRoleId() == ERole.roleLecturer) {
                 Lecturer lecturer = new Lecturer();
+
                 lecturer.setName(registerDTO.getName());
                 lecturer.setUser(savedUser);
+
                 lecturerRepository.save(lecturer);
             }
-        } else {
-            throw new AccessDeniedException(Collections.singletonMap("You can not create admin", null));
         }
         return new MessageResponse(HttpServletResponse.SC_OK, "Tao user thanh cong");
     }
@@ -192,7 +195,7 @@ public class UserServiceImpl implements UserService {
 
     private UserShowDTO mapToDTO(User user) {
         if (user.isDeleted())
-            throw new AccessDeniedException(Collections.singletonMap("user is deleted", null));
+            throw new AccessDeniedException(Collections.singletonMap("message", "user is deleted"));
 
         UserShowDTO userShowDTO = userMapper.toDTOShow(user);
 
@@ -201,8 +204,10 @@ public class UserServiceImpl implements UserService {
             case 3: {
                 Student student = studentRepository.findByUserId(user.getId()).orElseThrow(
                         () -> new ResourceNotFoundException(Collections.singletonMap("message", "student is null"))
+
                 );
                 userShowDTO.setName(student.getName());
+
                 break;
             }
 
@@ -215,7 +220,7 @@ public class UserServiceImpl implements UserService {
             }
 
             default:
-                throw new ResourceNotFoundException(Collections.singletonMap("role id: ", roleIdDb));
+                throw new ResourceNotFoundException(Collections.singletonMap("message", "this role does not found"));
         }
 
         return userShowDTO;

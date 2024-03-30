@@ -38,10 +38,10 @@ public class ExamResultServiceImpl implements ExamResultService {
 
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findByEmail(email).orElseThrow(
-                () -> new ResourceNotFoundException(Collections.singletonMap("Not authentication", null)));
+                () -> new ResourceNotFoundException(Collections.singletonMap("message", "not authentication")));
 
         Student student = studentRepository.findByUserId(user.getId()).orElseThrow(
-                () -> new AccessDeniedException(Collections.singletonMap("You aren't a student", null))
+                () -> new AccessDeniedException(Collections.singletonMap("message", "You aren't a student"))
         );
 
         Exam exam = examRepository.findById(creationDTO.getExamId()).orElseThrow(
@@ -49,7 +49,7 @@ public class ExamResultServiceImpl implements ExamResultService {
         );
 
         if (examResultRepository.existsByExamIdAndStudentId(exam.getId(), student.getId())) {
-            throw new AccessDeniedException(Collections.singletonMap("You have been done yet", null));
+            throw new AccessDeniedException(Collections.singletonMap("message", "You have been done yet"));
         }
 
         ExamResult examResult = new ExamResult();

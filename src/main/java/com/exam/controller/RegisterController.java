@@ -21,6 +21,6 @@ public class RegisterController {
     public ResponseEntity<?> registerUser(@Valid @RequestBody RegisterDTO registerDTO) {
 
 
-        return ResponseEntity.ok(userService.saveRegister(registerDTO));
+        return ResponseEntity.ok(userService.createRegister(registerDTO));
     }
 }

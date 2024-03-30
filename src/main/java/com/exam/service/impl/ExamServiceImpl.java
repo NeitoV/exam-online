@@ -66,7 +66,7 @@ public class ExamServiceImpl implements ExamService {
 
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findByEmail(email).orElseThrow(
-                () -> new ResourceNotFoundException(Collections.singletonMap("Not authentication", null))
+                () -> new ResourceNotFoundException(Collections.singletonMap("message", "Not authentication"))
         );
         Lecturer lecturer = null;
 
@@ -97,10 +97,10 @@ public class ExamServiceImpl implements ExamService {
     public ExamShowDTO findTheExam(String code) {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findByEmail(email).orElseThrow(
-                () -> new ResourceNotFoundException(Collections.singletonMap("Not authentication", null)));
+                () -> new ResourceNotFoundException(Collections.singletonMap("message", "Not authentication")));
 
         Student student = studentRepository.findByUserId(user.getId()).orElseThrow(
-                () -> new AccessDeniedException(Collections.singletonMap("You aren't a student", null))
+                () -> new AccessDeniedException(Collections.singletonMap("message", "You aren't a student"))
         );
 
         Exam exam = examRepository.findByCode(code).orElseThrow(
@@ -112,7 +112,7 @@ public class ExamServiceImpl implements ExamService {
         // if student not exists the allowed or exam expried
         if(!isAllowed || LocalDate.now().compareTo(exam.getExpiryDate()) > ZERO ) {
 
-            throw new AccessDeniedException(Collections.singletonMap("you aren't allowed to participate", null));
+            throw new AccessDeniedException(Collections.singletonMap("message", "you aren't allowed to participate"));
         }
 
         List<Question> questions = questionRepository.findAllByExamId(exam.getId());

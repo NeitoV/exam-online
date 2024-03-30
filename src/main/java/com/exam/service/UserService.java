@@ -16,7 +16,7 @@ public interface UserService {
     MessageResponse changePassword(ChangePasswordDTO changePasswordDTO);
 
     @Transactional
-    MessageResponse saveRegister(RegisterDTO registerDTO);
+    MessageResponse createRegister(RegisterDTO registerDTO);
 
     PaginationDTO filterUser(String keyword, long roleId, int pageNumber, int pageSize);
 }
