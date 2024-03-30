@@ -17,12 +17,12 @@ public interface UserRepository extends JpaRepository<User,Long> {
     Boolean existsByEmail(String email);
 
     @Query("select u from User u "+
-//            "left join Student s on u.id = s.user.id "+
-//            "left join Lecturer l on u.id = l.user.id "+
+            "left join Student s on u.id = s.user.id "+
+            "left join Lecturer l on u.id = l.user.id "+
             "where "+
             "(:keyword = '' "+
-//            "OR s.name LIKE %:keyword% "+
-//            "OR l.name LIKE %:keyword% "+
+            "OR s.name LIKE %:keyword% "+
+            "OR l.name LIKE %:keyword% "+
             "OR u.email LIKE %:keyword%) "+
             "AND (u.role.id = :roleId OR :roleId = 2 OR :roleId = 3 ) "+
             "AND u.role.id != 1 " +

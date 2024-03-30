@@ -134,17 +134,20 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public MessageResponse saveRegister(RegisterDTO registerDTO) {
+    public MessageResponse createRegister(RegisterDTO registerDTO) {
         if (userRepository.findByEmail(registerDTO.getEmail()).isPresent())
-            throw new ConflictException(Collections.singletonMap("email: ", registerDTO.getEmail()));
+            throw new ResourceNotFoundException(Collections.singletonMap("message", "email do not found"));
 
         if (!registerDTO.getPassword().equals(registerDTO.getPasswordConfirm())) {
             throw new ExceptionCustom("Passwords do not match!");
         }
 
-        if (registerDTO.getRoleId() == ERole.roleLecturer || registerDTO.getRoleId() == ERole.roleStudent) {
+        if (registerDTO.getRoleId() == ERole.roleAdmin) {
+            throw new ResourceNotFoundException(Collections.singletonMap("message", "admin access not allow"));
+        } else {
+
             Role role = roleRepository.findById(registerDTO.getRoleId()).orElseThrow(
-                    () -> new ResourceNotFoundException(Collections.singletonMap("role id:", registerDTO.getRoleId()))
+                    () -> new ResourceNotFoundException(Collections.singletonMap("message", "role do not exist"))
             );
 
             User user = new User();
@@ -158,18 +161,20 @@ public class UserServiceImpl implements UserService {
 
             if (registerDTO.getRoleId() == ERole.roleStudent) {
                 Student student = new Student();
+
                 student.setName(registerDTO.getName());
                 student.setUser(savedUser);
+
                 studentRepository.save(student);
             }
             if (registerDTO.getRoleId() == ERole.roleLecturer) {
                 Lecturer lecturer = new Lecturer();
+
                 lecturer.setName(registerDTO.getName());
                 lecturer.setUser(savedUser);
+
                 lecturerRepository.save(lecturer);
             }
-        } else {
-            throw new AccessDeniedException(Collections.singletonMap("You can not create admin", null));
         }
         return new MessageResponse(HttpServletResponse.SC_OK, "Tao user thanh cong");
     }
@@ -197,9 +202,10 @@ public class UserServiceImpl implements UserService {
         switch (roleIdDb) {
             case 2: {
                 Student student = studentRepository.findByUserId(user.getId()).orElseThrow(
-                        () -> new ResourceNotFoundException(Collections.singletonMap("student: ", null))
+                        () -> new ResourceNotFoundException(Collections.singletonMap("message ", "this student does not exist"))
                 );
                 userShowDTO.setName(student.getName());
+
                 break;
             }
 
@@ -210,7 +216,7 @@ public class UserServiceImpl implements UserService {
             }
 
             default:
-                throw new ResourceNotFoundException(Collections.singletonMap("role id: ", roleIdDb));
+                throw new ResourceNotFoundException(Collections.singletonMap("message", "this role does not found"));
         }
 
         return userShowDTO;
@@ -223,9 +229,7 @@ public class UserServiceImpl implements UserService {
 
         for (User user : page.getContent()) {
 
-//            UserShowDTO userShowDTO = mapToDTO(user);
-            UserShowDTO userShowDTO = new UserShowDTO();
-            userShowDTO.setEmail(user.getEmail());
+            UserShowDTO userShowDTO = mapToDTO(user);
             list.add(userShowDTO);
         }
 
