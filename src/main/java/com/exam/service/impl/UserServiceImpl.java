@@ -79,7 +79,7 @@ public class UserServiceImpl implements UserService {
                 new UsernamePasswordAuthenticationToken(loginDTO.getEmail(),
                         loginDTO.getPassword()));
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+//        SecurityContextHolder.getContext().setAuthentication(authentication);
 
         Role role = user.getRole();
 

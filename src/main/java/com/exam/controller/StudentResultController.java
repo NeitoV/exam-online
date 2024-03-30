@@ -19,6 +19,7 @@ public class StudentResultController {
     public ResponseEntity<?> getStudentResult(@PathVariable Long studentId,
                                               @RequestParam(defaultValue = "0") int pageNumber,
                                               @RequestParam(defaultValue = "10") int pageSize) {
+
         PaginationDTO result = studentResultService.getStudentExamResults(studentId, pageNumber, pageSize);
 
         return ResponseEntity.ok(result);
