@@ -43,10 +43,9 @@ public class StudentResultImpl implements StudentResultService {
             dtos.add(dto);
         }
 
-        Page<StudentResultDTO> page = new PageImpl<>(dtos, PageRequest.of(pageNumber, pageSize), 2);
+        Page<StudentResultDTO> page = new PageImpl<>(dtos, PageRequest.of(pageNumber, pageSize), dtos.size());
 
         return new PaginationDTO(page.getContent(), page.isFirst(), page.isLast(),
                 page.getTotalPages(), page.getTotalElements(), page.getNumber(), page.getSize());
-//      return dtos;
     }
 }

@@ -19,6 +19,8 @@ import com.exam.service.UserService;
 import com.exam.data.mapper.UserMapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -30,6 +32,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -184,5 +187,50 @@ public class UserServiceImpl implements UserService {
         return matcher.matches();
     }
 
+    private UserShowDTO mapToDTO(User user) {
+        if (user.isDeleted())
+            throw new AccessDeniedException(Collections.singletonMap("user is deleted", null));
+
+        UserShowDTO userShowDTO = userMapper.toDTOShow(user);
+
+        int roleIdDb = user.getRole().getId().intValue();
+        switch (roleIdDb) {
+            case 2: {
+                Student student = studentRepository.findByUserId(user.getId()).orElseThrow(
+                        () -> new ResourceNotFoundException(Collections.singletonMap("student: ", null))
+                );
+                userShowDTO.setName(student.getName());
+                break;
+            }
+
+            case 3: {
+                Lecturer lecturer = lecturerRepository.findByUserId(user.getId());
+                userShowDTO.setName(lecturer.getName());
+                break;
+            }
+
+            default:
+                throw new ResourceNotFoundException(Collections.singletonMap("role id: ", roleIdDb));
+        }
+
+        return userShowDTO;
+    }
+    @Override
+    public PaginationDTO filterUser(String keyword, long roleId, int pageNumber, int pageSize) {
+
+        Page<User> page = userRepository.filterUser(keyword, roleId, PageRequest.of(pageNumber, pageSize));
+        List<UserShowDTO> list = new ArrayList<>();
+
+        for (User user : page.getContent()) {
+
+//            UserShowDTO userShowDTO = mapToDTO(user);
+            UserShowDTO userShowDTO = new UserShowDTO();
+            userShowDTO.setEmail(user.getEmail());
+            list.add(userShowDTO);
+        }
+
+        return new PaginationDTO(list, page.isFirst(), page.isLast(),
+                page.getTotalPages(), page.getTotalElements(), page.getNumber(), page.getSize());
+    }
 
 }
