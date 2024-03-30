@@ -5,5 +5,5 @@ import com.exam.data.dto.MessageResponse;
 
 
 public interface StudentClassService {
-    MessageResponse saveNewClass(StudentClassDTO classDTO);
+    String saveNewClass(StudentClassDTO classDTO);
 }
