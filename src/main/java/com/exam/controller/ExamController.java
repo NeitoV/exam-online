@@ -1,5 +1,6 @@
 package com.exam.controller;
 
+import com.exam.data.dto.PaginationDTO;
 import com.exam.data.dto.exam.ExamDTO;
 import com.exam.service.ExamService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -30,5 +31,22 @@ public class ExamController {
     public ResponseEntity<?> findTheExamByCode(@PathVariable String code) {
 
         return ResponseEntity.ok(examService.findTheExam(code));
+    }
+
+    @SecurityRequirement(name = "Bearer Authentication")
+    @PreAuthorize("hasAuthority('Role_Lecturer')")
+    @GetMapping("")
+    public ResponseEntity<?> findAllExam(@RequestParam(defaultValue = "0") int pageNumber,
+                                         @RequestParam(defaultValue = "10") int pageSize) {
+
+        PaginationDTO result = examService.findAllExam(pageNumber, pageSize);
+
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/exam_id={id}")
+    public ResponseEntity<?> findExamById(@PathVariable long id) {
+
+        return ResponseEntity.ok(examService.findExamById(id));
     }
 }

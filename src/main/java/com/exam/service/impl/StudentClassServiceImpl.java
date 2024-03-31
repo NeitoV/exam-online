@@ -26,25 +26,27 @@ public class StudentClassServiceImpl implements StudentClassService {
 
         String randomString = uuid.toString().replaceAll("-", "");
         randomString = randomString.substring(0, length);
+
         return randomString;
     }
 
     @Override
-    public MessageResponse saveNewClass(StudentClassDTO classDTO) {
+    public String saveNewClass(StudentClassDTO classDTO) {
         if (myClassRepository.findByName(classDTO.getName()).isPresent())
             throw new ConflictException(Collections.singletonMap("Name: ", classDTO.getName()));
-        else {
+
             StudentClass myClass = new StudentClass();
             int countExistCode;
-
+            String randomCode;
             do {
-                String randomCode = generateRandomString(EConstantNumber.MaxLengthCode);
+                randomCode = generateRandomString(EConstantNumber.MaxLengthCode);
                 countExistCode = myClassRepository.countByCode(randomCode);
                 myClass.setCode(randomCode);
                 myClass.setName(classDTO.getName());
             } while (countExistCode != 0);
             myClassRepository.save(myClass);
-        }
-        return new MessageResponse(HttpServletResponse.SC_OK, "Create Class successful");
+
+        //return new MessageResponse(HttpServletResponse.SC_OK, "Create Class successful with class code " + randomCode);
+        return randomCode;
     }
 }

@@ -18,8 +18,6 @@ public class AllowedStudentController {
     private AllowedStudentService allowedStudentService;
 
 
-    @SecurityRequirement(name = "Bearer Authentication")
-    @PreAuthorize("hasAuthority('Role_Admin')")
     @PostMapping("/{examId}")
     ResponseEntity<?> createAllowedStudentForExam(@PathVariable Long examId, @RequestBody List<Long> studentIdS) {
 
