@@ -19,8 +19,6 @@ public class StudentClassController {
     @Autowired
     private StudentClassService classService;
 
-    @SecurityRequirement(name = "Bearer Authentication")
-    @PreAuthorize("hasAuthority('Role_Admin')")
     @PostMapping("")
     public ResponseEntity<?> saveNewClass(@Valid @RequestBody StudentClassDTO myClassDTO){
 
