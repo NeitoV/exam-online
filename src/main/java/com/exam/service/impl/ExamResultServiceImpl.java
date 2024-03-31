@@ -2,7 +2,11 @@ package com.exam.service.impl;
 
 import com.exam.data.dto.exam.ExamResultCreationDTO;
 import com.exam.data.dto.exam.ExamResultDTO;
+import com.exam.data.dto.result.ResulDetailsShowDTO;
+import com.exam.data.dto.result.ResultDetailsDTO;
+import com.exam.data.dto.result.StudentResultDTO;
 import com.exam.data.enity.*;
+import com.exam.data.mapper.ExamResultMapper;
 import com.exam.data.repository.*;
 import com.exam.exception.AccessDeniedException;
 import com.exam.exception.ExceptionCustom;
@@ -14,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ExamResultServiceImpl implements ExamResultService {
@@ -29,6 +34,8 @@ public class ExamResultServiceImpl implements ExamResultService {
     private ExamResultRepository examResultRepository;
     @Autowired
     private ExamResultDetailsRepository examResultDetailsRepository;
+    @Autowired
+    private ExamResultMapper examResultMapper;
 
 
     public ExamResultDTO createExamResult(ExamResultCreationDTO creationDTO) {
@@ -82,5 +89,25 @@ public class ExamResultServiceImpl implements ExamResultService {
         examResultRepository.save(examResult);
 
         return new ExamResultDTO(exam.getId(), student.getId(), totalCorrect);
+    }
+
+    public ResulDetailsShowDTO getResultDetailsById(long id) {
+        ResulDetailsShowDTO resulDetailsShowDTO = new ResulDetailsShowDTO();
+
+        ExamResult examResult = examResultRepository.findById(id).orElseThrow(
+                () -> new ResourceNotFoundException(Collections.singletonMap("Exam Results:", id))
+        );
+        StudentResultDTO studentResultDTO = examResultMapper.examResultToStudentResultDto(examResult);
+
+        List<ExamResultDetails> details = examResultDetailsRepository.findAllByExamResultId(examResult.getId());
+
+        List<ResultDetailsDTO> detailsDTOS = details.stream()
+                .map(examResultDetails -> examResultMapper.toDetailsDTO(examResultDetails))
+                .collect(Collectors.toList());
+
+        resulDetailsShowDTO.setStudentResultDTO(studentResultDTO);
+        resulDetailsShowDTO.setResultDetailsDTOList(detailsDTOS);
+
+        return resulDetailsShowDTO;
     }
 }

@@ -1,6 +1,8 @@
 package com.exam.service.impl;
 
+import com.exam.data.dto.PaginationDTO;
 import com.exam.data.dto.QuestionDTO;
+import com.exam.data.dto.exam.ExamBasicInformationDTO;
 import com.exam.data.dto.exam.ExamDTO;
 import com.exam.data.dto.exam.ExamShowDTO;
 import com.exam.data.enity.*;
@@ -12,6 +14,9 @@ import com.exam.exception.AccessDeniedException;
 import com.exam.exception.ResourceNotFoundException;
 import com.exam.service.ExamService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -130,5 +135,35 @@ public class ExamServiceImpl implements ExamService {
         examShowDTO.setRandomCode(generateRandomString());
 
         return examShowDTO;
+    }
+
+    public PaginationDTO findAllExam(int pageNumber, int pageSize) {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByEmail(email).orElseThrow(
+                () -> new ResourceNotFoundException(Collections.singletonMap("message", "Not authentication")));
+
+        Lecturer lecturer = lecturerRepository.findByUserId(user.getId()).orElseThrow(
+                () -> new ResourceNotFoundException(Collections.singletonMap("message", "lecture is null"))
+        );
+
+        Page<ExamBasicInformationDTO> page = examRepository.findAllByLecturerId(
+                lecturer.getId(), PageRequest.of(pageNumber, pageSize)).map(exam -> examMapper.toDTOBasic(exam));
+
+        return new PaginationDTO(page.getContent(), page.isFirst(), page.isLast(),
+                page.getTotalPages(), page.getTotalElements(), page.getNumber(), page.getSize());
+    }
+
+    public ExamDTO findExamById(long id) {
+        List<QuestionDTO> questionDTOS = questionRepository.findAllByExamId(id).stream().map(
+                question -> questionMapper.toDTO(question)).collect(Collectors.toList());
+
+        Exam exam = examRepository.findById(id).orElseThrow(
+                () -> new ResourceNotFoundException(Collections.singletonMap("exam id:", id))
+        );
+
+        ExamDTO examDTO = examMapper.toDTO(exam);
+        examDTO.setQuestionDTOS(questionDTOS);
+
+        return examDTO;
     }
 }

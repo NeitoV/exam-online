@@ -26,6 +26,7 @@ public class StudentClassServiceImpl implements StudentClassService {
 
         String randomString = uuid.toString().replaceAll("-", "");
         randomString = randomString.substring(0, length);
+
         return randomString;
     }
 

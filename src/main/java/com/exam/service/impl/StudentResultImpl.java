@@ -1,49 +1,48 @@
 package com.exam.service.impl;
 
 import com.exam.data.dto.PaginationDTO;
-import com.exam.data.dto.StudentResultDTO;
+import com.exam.data.dto.result.StudentResultDTO;
+import com.exam.data.enity.Student;
+import com.exam.data.enity.User;
+import com.exam.data.mapper.ExamMapper;
+import com.exam.data.mapper.ExamResultMapper;
+import com.exam.data.repository.StudentRepository;
 import com.exam.data.repository.StudentResultRepository;
-import com.exam.enumeration.EConstantNumber;
+import com.exam.data.repository.UserRepository;
+import com.exam.exception.AccessDeniedException;
+import com.exam.exception.ResourceNotFoundException;
 import com.exam.service.StudentResultService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import java.util.ArrayList;
-import java.util.List;
+
+import java.util.Collections;
 
 @Service
 public class StudentResultImpl implements StudentResultService {
     @Autowired
     private StudentResultRepository studentResultRepository;
+    @Autowired
+    private ExamResultMapper examResultMapper;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private StudentRepository studentRepository;
 
-    public PaginationDTO getStudentExamResults(Long studentId, int pageNumber, int pageSize) {
-        List<Object[]> results = studentResultRepository.getStudentResult(studentId);
-        List<StudentResultDTO> dtos = new ArrayList<>();
+    public PaginationDTO getStudentExamResults(int pageNumber, int pageSize) {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByEmail(email).orElseThrow(
+                () -> new ResourceNotFoundException(Collections.singletonMap("message", "Not authentication")));
 
-        for (Object[] result : results) {
-            String examCode = (String) result[0];
-            String lecturerName = (String) result[1];
-            String className = (String)result[2];
-            int point = (int) result[3];
+        Student student = studentRepository.findByUserId(user.getId()).orElseThrow(
+                () -> new AccessDeniedException(Collections.singletonMap("message", "You aren't a student"))
+        );
 
-            StudentResultDTO dto = new StudentResultDTO();
-            dto.setExamCode(examCode);
-            dto.setLecturerName(lecturerName);
-            dto.setPoint(point);
-            dto.setClassName(className);
-
-            if(point >= EConstantNumber.passPoint) {
-                dto.setPass(true);
-            }
-            else
-                dto.setPass(false);
-
-            dtos.add(dto);
-        }
-
-        Page<StudentResultDTO> page = new PageImpl<>(dtos, PageRequest.of(pageNumber, pageSize), dtos.size()git );
+        Page<StudentResultDTO> page = studentResultRepository
+                .getStudentResult(student.getId(), PageRequest.of(pageNumber, pageSize)).map(
+                        examResult -> examResultMapper.examResultToStudentResultDto(examResult));
 
         return new PaginationDTO(page.getContent(), page.isFirst(), page.isLast(),
                 page.getTotalPages(), page.getTotalElements(), page.getNumber(), page.getSize());
