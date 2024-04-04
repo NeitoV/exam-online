@@ -19,6 +19,10 @@ public class ExamResultDetails {
     @JoinColumn(name = "question_id", nullable = false)
     private Question question;
 
-    @Column(name = "selected_answer", columnDefinition = "char(1)", nullable = false)
+    @Column(name = "selected_answer", columnDefinition = "NVARCHAR(250)", nullable = false)
     private String selectedAnswer;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "exam_results_id", nullable = false)
+    private ExamResult examResult;
 }
