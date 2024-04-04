@@ -49,4 +49,12 @@ public class ExamController {
 
         return ResponseEntity.ok(examService.findExamById(id));
     }
+
+    @SecurityRequirement(name = "Bearer Authentication")
+    @PreAuthorize("hasAuthority('Role_Lecturer')")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteById(@PathVariable long id) {
+
+        return ResponseEntity.ok(examService.deleteExamById(id));
+    }
 }

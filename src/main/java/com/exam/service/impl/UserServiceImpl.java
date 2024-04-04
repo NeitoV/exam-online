@@ -136,7 +136,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public MessageResponse createRegister(RegisterDTO registerDTO) {
         if (userRepository.findByEmail(registerDTO.getEmail()).isPresent())
-            throw new ResourceNotFoundException(Collections.singletonMap("message", "email do not found"));
+            throw new ConflictException(Collections.singletonMap("email", registerDTO.getEmail()));
 
         if (!registerDTO.getPassword().equals(registerDTO.getPasswordConfirm())) {
             throw new ExceptionCustom("Passwords do not match!");

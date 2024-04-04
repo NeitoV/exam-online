@@ -1,5 +1,6 @@
 package com.exam.service.impl;
 
+import com.exam.data.dto.MessageResponse;
 import com.exam.data.dto.PaginationDTO;
 import com.exam.data.dto.QuestionDTO;
 import com.exam.data.dto.exam.ExamBasicInformationDTO;
@@ -13,6 +14,7 @@ import com.exam.enumeration.ERole;
 import com.exam.exception.AccessDeniedException;
 import com.exam.exception.ResourceNotFoundException;
 import com.exam.service.ExamService;
+import com.exam.service.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,6 +22,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -45,6 +48,10 @@ public class ExamServiceImpl implements ExamService {
     private StudentRepository studentRepository;
     @Autowired
     private AllowedStudentRepository allowedStudentRepository;
+    @Autowired
+    private QuestionServiceImpl questionService;
+    @Autowired
+    private ExamResultRepository examResultRepository;
 
     private static final String CHARACTERS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     private static final int LENGTH = 8;
@@ -165,5 +172,24 @@ public class ExamServiceImpl implements ExamService {
         examDTO.setQuestionDTOS(questionDTOS);
 
         return examDTO;
+    }
+
+    public MessageResponse deleteExamById(long id) {
+        Exam exam = examRepository.findById(id).orElseThrow(
+                () -> new ResourceNotFoundException(Collections.singletonMap("exam id:", id))
+        );
+
+        Lecturer lecturer = questionService.getLecturerByToken();
+        if (lecturer.getId() != exam.getLecturer().getId()) { // can't update anyone's exam
+            throw new AccessDeniedException(Collections.singletonMap("message", "The exam does not belong to you"));
+        }
+
+        if (examResultRepository.existsByExamId(exam.getId()))
+            throw new AccessDeniedException(Collections.singletonMap("message", "The exam has been token by student"));
+
+        questionRepository.deleteAllByExamId(exam.getId());
+        examRepository.deleteById(id);
+
+        return new MessageResponse(HttpServletResponse.SC_OK, "successfully");
     }
 }

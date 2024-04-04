@@ -12,6 +12,9 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface ExamMapper {
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "expiryDate", source = "examBasicInformationDTO.expiryDate")
+    @Mapping(target = "durationMinutes", source = "examBasicInformationDTO.durationMinutes")
+    @Mapping(target = "name", source = "examBasicInformationDTO.name")
     Exam toEntity(ExamDTO examDTO);
 
     @Mapping(source = "exam", target = "examDTO.examBasicInformationDTO")
