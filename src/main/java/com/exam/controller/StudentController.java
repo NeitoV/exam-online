@@ -20,4 +20,10 @@ public class StudentController {
 
         return ResponseEntity.ok(studentService.findAllStudent());
     }
+
+    @GetMapping("/allowed")
+    public ResponseEntity<?> findAllAllowed() {
+
+        return ResponseEntity.ok(studentService.findAllAllowedExamByStudent());
+    }
 }

@@ -179,7 +179,6 @@ public class ExamServiceImpl implements ExamService {
                 () -> new ResourceNotFoundException(Collections.singletonMap("exam id:", id))
         );
 
-
         Lecturer lecturer = questionService.getLecturerByToken();
         if (lecturer.getId() != exam.getLecturer().getId()) { // can't update anyone's exam
             throw new AccessDeniedException(Collections.singletonMap("message", "The exam does not belong to you"));
